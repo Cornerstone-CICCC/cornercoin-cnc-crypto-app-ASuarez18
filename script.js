@@ -10,15 +10,21 @@
 
 // > 2. Account class
 class Account {
-  constructor(username, balance = 500.00) {
-    this.balance = balance;
+  constructor(username) {
     this.username = username;
+    // > 7. Transactions
     this.transactions = [];
+  }
+
+  get balance() {
+    let balance = 0;
+    for (let transaction of this.transactions)
+      balance += transaction.value;
+    return balance;
   }
 
   addTransaction(transaction) {
     this.transactions.push(transaction);
-    transaction.commit();
   }
 
   describe() {
@@ -35,13 +41,21 @@ class Transaction {
 
   // > 5. commit() method
   commit() {
-    this.account.balance += this.value;
+    if (!this.isAllowed()) return false;
+
+    this.time = new Date();
+    this.account.addTransaction(this);
+    return true;
   }
 }
 
 class Withdrawal extends Transaction {
   get value() {
     return -this.amount;
+  }
+
+  isAllowed() {
+    return (this.account.balance - this.amount >= 0);
   }
 }
 
@@ -50,23 +64,28 @@ class Deposit extends Transaction {
   get value() {
     return this.amount;
   }
+
+  isAllowed() {
+    return true;
+  }
 }
 
 // ` ---------------------------------
 const myAccount = new Account("snow-patrol");
 
-console.log(`Starting Balance: ${myAccount.balance}`);
+console.log("--- Initial State ---");
+console.log(`Balance: ${myAccount.balance}`);
 
-const t1 = new Withdrawal(50.25, myAccount);
-t1.commit();
-console.log("Transaction 1:", t1);
+console.log("\n--- Doing Transactions ---");
+const t1 = new Deposit(100.00, myAccount);
+console.log("Deposit $100:", t1.commit());
 
-const t2 = new Withdrawal(9.99, myAccount);
-t2.commit();
-console.log("Transaction 2:", t2);
+const t2 = new Withdrawal(50.00, myAccount);
+console.log("Withdraw $50:", t2.commit());
 
-const t3 = new Deposit(120.0, myAccount);
-t3.commit();
-console.log("Transaction 3:", t3);
+const t3 = new Withdrawal(1000.00, myAccount);
+console.log("Withdraw $1000 (fail):", t3.commit());
 
-console.log("Final Balance:", myAccount.balance);
+console.log("\n--- Final State ---");
+console.log(`Final Balance: ${myAccount.balance}`);
+console.log("Total successful transactions:", myAccount.transactions.length);
