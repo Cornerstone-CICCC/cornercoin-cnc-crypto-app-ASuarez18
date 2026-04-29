@@ -10,7 +10,7 @@
 
 // > 2. Account class
 class Account {
-  constructor(username, balance = 0) {
+  constructor(username, balance = 500.00) {
     this.balance = balance;
     this.username = username;
     this.transactions = [];
@@ -26,44 +26,44 @@ class Account {
   }
 }
 
-const myAccount = new Account("snow-patrol", 1000.0);
-console.log(myAccount.describe());
-
-
-let balance = 500.0;
-
 class Withdrawal {
-  constructor(amount) {
+  constructor(amount, account) {
     this.amount = amount;
+    this.account = account;
   }
 
   commit() {
-    balance -= this.amount;
+    this.account.balance -= this.amount;
   }
 }
-// / --
-t1 = new Withdrawal(50.25);
-t1.commit();
-console.log("Transaction 1:", t1);
-
-t2 = new Withdrawal(9.99);
-t2.commit();
-console.log("Transaction 2:", t2);
-
-console.log("Balance:", balance);
 
 // > 1. Deposit class
 class Deposit {
-  constructor(amount) {
+  constructor(amount, account) {
     this.amount = amount;
+    this.account = account;
   }
 
   commit() {
-    balance += this.amount;
+    this.account.balance += this.amount;
   }
 }
 
-t3 = new Deposit(120.0);
+// ` ---------------------------------
+const myAccount = new Account("snow-patrol");
+
+console.log(`Starting Balance: ${myAccount.balance}`);
+
+const t1 = new Withdrawal(50.25, myAccount);
+t1.commit();
+console.log("Transaction 1:", t1);
+
+const t2 = new Withdrawal(9.99, myAccount);
+t2.commit();
+console.log("Transaction 2:", t2);
+
+const t3 = new Deposit(120.0, myAccount);
 t3.commit();
 console.log("Transaction 3:", t3);
-console.log("Balance:", balance);
+
+console.log("Final Balance:", myAccount.balance);
