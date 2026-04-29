@@ -8,6 +8,28 @@
 - Don't allow withdrawals that exceed the remaining balance of the account
 */
 
+// > 2. Account class
+class Account {
+  constructor(username, balance = 0) {
+    this.balance = balance;
+    this.username = username;
+    this.transactions = [];
+  }
+
+  addTransaction(transaction) {
+    this.transactions.push(transaction);
+    transaction.commit();
+  }
+
+  describe() {
+    return `Account for ${this.username} has a balance of $${this.balance}. \nTransaction history: ${this.transactions}`;
+  }
+}
+
+const myAccount = new Account("snow-patrol", 1000.0);
+console.log(myAccount.describe());
+
+
 let balance = 500.0;
 
 class Withdrawal {
